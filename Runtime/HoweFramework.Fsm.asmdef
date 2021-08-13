@@ -1,0 +1,16 @@
+{
+    "name": "HoweFramework.Fsm",
+    "rootNamespace": "HoweFramework.Fsm",
+    "references": [
+        "GUID:5ff63b3b2f00ae149848dc586bdd5d5b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+    "name": "com.howegame.framework.fsm",
+    "author": "SunHowe",
+    "displayName": "HoweFramework Fsm",
+    "description": "Provide Finite State Machine.",
+    "unity": "2020.3",
+    "version": "2021.8.12",
+    "keywords": [
+        "howegame",
+        "howegamefsm"
+    ],
+    "dependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SunHowe/Howe-Framework-Fsm.git"
+    }
+}
