@@ -1,4 +1,5 @@
-﻿using HoweFramework.Variable;
+﻿using HoweFramework.Fsm.Enums;
+using HoweFramework.Variable;
 
 namespace HoweFramework.Fsm
 {
@@ -8,9 +9,14 @@ namespace HoweFramework.Fsm
     public interface IFsm : IVariableContainer<string>
     {
         /// <summary>
-        /// 状态机是否在运行中
+        /// 状态机的实例id(唯一id)
         /// </summary>
-        bool IsRunning { get; }
+        int id { get; }
+        
+        /// <summary>
+        /// 状态机当前运行状态
+        /// </summary>
+        FsmStatus status { get; }
 
         /// <summary>
         /// 状态机当前是否是指定状态

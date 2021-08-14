@@ -5,7 +5,7 @@ namespace HoweFramework.Fsm
 {
     internal interface IFsmOperator : IUpdate, IDisposable
     {
-        void Initialize(params IFsmState[] states);
+        void Initialize(int id, IFsmState[] states);
 
         void Start<T>() where T : class, IFsmState;
 
