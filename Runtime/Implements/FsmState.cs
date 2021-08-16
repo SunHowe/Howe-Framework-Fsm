@@ -1,4 +1,5 @@
-﻿using HoweFramework.Fsm.Exceptions;
+﻿using System;
+using HoweFramework.Fsm.Exceptions;
 
 namespace HoweFramework.Fsm.Implements
 {
@@ -46,12 +47,20 @@ namespace HoweFramework.Fsm.Implements
         /// <summary>
         /// 令所在的状态机切换到指定状态
         /// </summary>
-        protected void ChangeState<T>() where T : class, IFsmState
+        protected void ChangeState(Type stateType)
         {
             if (!isActive)
                 throw new FsmStateIsNotActiveException();
 
-            _fsmOperator.ChangeState<T>();
+            _fsmOperator.ChangeState(stateType);
+        }
+
+        /// <summary>
+        /// 令所在的状态机切换到指定状态
+        /// </summary>
+        protected void ChangeState<T>() where T : class, IFsmState
+        {
+            ChangeState(typeof(T));
         }
 
         protected virtual void OnInitialize(IFsm fsm)

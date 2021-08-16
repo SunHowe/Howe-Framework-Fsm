@@ -7,9 +7,9 @@ namespace HoweFramework.Fsm
     {
         void Initialize(int id, IFsmState[] states);
 
-        void Start<T>() where T : class, IFsmState;
+        void Start(Type stateType);
 
-        void ChangeState<T>() where T : class, IFsmState;
+        void ChangeState(Type stateType);
 
         void Stop();
     }

@@ -1,4 +1,5 @@
-﻿using HoweFramework.Fsm.Enums;
+﻿using System;
+using HoweFramework.Fsm.Enums;
 using HoweFramework.Variable;
 
 namespace HoweFramework.Fsm
@@ -14,13 +15,23 @@ namespace HoweFramework.Fsm
         int id { get; }
         
         /// <summary>
-        /// 状态机当前运行状态
+        /// 状态机运行情况
         /// </summary>
         FsmStatus status { get; }
+        
+        /// <summary>
+        /// 状态机当前的状态
+        /// </summary>
+        IFsmState activeState { get; }
 
         /// <summary>
         /// 状态机当前是否是指定状态
         /// </summary>
-        bool IsState<T>() where T : class, IFsmState;
+        bool IsState(Type stateType);
+
+        /// <summary>
+        /// 状态机内是否包含指定状态
+        /// </summary>
+        bool HasState(Type stateType);
     }
 }

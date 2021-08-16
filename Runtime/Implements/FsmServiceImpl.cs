@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HoweFramework.Base;
 using HoweFramework.Fsm.Enums;
 using HoweFramework.Pool;
@@ -23,13 +24,14 @@ namespace HoweFramework.Fsm.Implements
 
         public void Update(float dt)
         {
-            _updates.Clear();
-            _updates.AddRange(_fsmDict.Values);
-
-            foreach (var fsm in _updates)
+            for (var index = 0; index < _updates.Count; index++)
             {
+                var fsm = _updates[index];
                 if (fsm.status != FsmStatus.Running)
+                {
+                    _updates.RemoveAt(index--);
                     continue;
+                }
 
                 fsm.Update(dt);
             }
@@ -76,50 +78,50 @@ namespace HoweFramework.Fsm.Implements
             var fsmOperator = GetFsm(id);
             if (fsmOperator == null)
                 return;
-            ;
 
             fsmOperator.Dispose();
             _destroys.Add(fsmOperator);
             _fsmDict.Remove(id);
         }
 
-        public void Start<T>(IFsm fsm) where T : class, IFsmState
+        public void Start(IFsm fsm, Type stateType)
         {
             var fsmOperator = GetFsm(fsm);
             if (fsmOperator == null)
                 return;
 
-            fsmOperator.Start<T>();
+            fsmOperator.Start(stateType);
+            _updates.Add(fsmOperator);
         }
 
-        public void Start<T>(int id) where T : class, IFsmState
+        public void Start(int id, Type stateType)
         {
             var fsmOperator = GetFsm(id);
             if (fsmOperator == null)
                 return;
 
-            fsmOperator.Start<T>();
-            ;
+            fsmOperator.Start(stateType);
+            _updates.Add(fsmOperator);
         }
 
-        public IUpdate StartManualDrive<T>(IFsm fsm) where T : class, IFsmState
+        public IUpdate StartManualDrive(IFsm fsm, Type stateType)
         {
             var fsmOperator = GetFsm(fsm);
             if (fsmOperator == null)
                 return null;
 
-            fsmOperator.Start<T>();
+            fsmOperator.Start(stateType);
 
             return fsmOperator;
         }
 
-        public IUpdate StartManualDrive<T>(int id) where T : class, IFsmState
+        public IUpdate StartManualDrive(int id, Type stateType)
         {
             var fsmOperator = GetFsm(id);
             if (fsmOperator == null)
                 return null;
 
-            fsmOperator.Start<T>();
+            fsmOperator.Start(stateType);
 
             return fsmOperator;
         }

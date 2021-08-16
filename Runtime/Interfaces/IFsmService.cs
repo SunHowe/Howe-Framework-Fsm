@@ -1,4 +1,5 @@
-﻿using HoweFramework.Base;
+﻿using System;
+using HoweFramework.Base;
 
 namespace HoweFramework.Fsm
 {
@@ -30,22 +31,22 @@ namespace HoweFramework.Fsm
         /// <summary>
         /// 启动指定状态机(由状态机服务驱动状态机的帧更新)
         /// </summary>
-        void Start<T>(IFsm fsm) where T : class, IFsmState;
+        void Start(IFsm fsm, Type stateType);
 
         /// <summary>
         /// 启动指定状态机(由状态机服务驱动状态机的帧更新)
         /// </summary>
-        void Start<T>(int id) where T : class, IFsmState;
+        void Start(int id, Type stateType);
 
         /// <summary>
         /// 启动指定状态机(自行驱动状态机的帧更新)
         /// </summary>
-        IUpdate StartManualDrive<T>(IFsm fsm) where T : class, IFsmState;
+        IUpdate StartManualDrive(IFsm fsm, Type stateType);
 
         /// <summary>
         /// 启动指定状态机(自行驱动状态机的帧更新)
         /// </summary>
-        IUpdate StartManualDrive<T>(int id) where T : class, IFsmState;
+        IUpdate StartManualDrive(int id, Type stateType);
 
         /// <summary>
         /// 停止指定状态机

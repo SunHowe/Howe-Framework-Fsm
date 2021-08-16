@@ -14,10 +14,10 @@ namespace HoweFramework.Fsm.Implements
     {
         private readonly IVariableContainer<string> _container = new VariableContainer<string>();
         private readonly Dictionary<Type, IFsmState> _fsmStates = new Dictionary<Type, IFsmState>();
-        private IFsmState _activeState;
 
         public int id { get; private set; }
         public FsmStatus status { get; private set; } = FsmStatus.Disposed;
+        public IFsmState activeState { get; private set; }
 
 
         public void Initialize(int id, IFsmState[] states)
@@ -64,23 +64,43 @@ namespace HoweFramework.Fsm.Implements
             id = -1;
         }
 
-        public bool IsState<T>() where T : class, IFsmState
+        public bool IsState(Type stateType)
         {
             if (status != FsmStatus.Running)
                 return false;
 
-            return _activeState.GetType() == typeof(T);
+            return activeState.GetType() == stateType;
         }
 
-        public void Start<T>() where T : class, IFsmState
+        public bool HasState(Type stateType)
+        {
+            return _fsmStates.ContainsKey(stateType);
+        }
+
+        public void Start(Type stateType)
         {
             if (status == FsmStatus.Running)
                 throw new FsmAlreadyRunningException();
 
-            if (!_fsmStates.TryGetValue(typeof(T), out var state))
+            if (!_fsmStates.TryGetValue(stateType, out var state))
                 throw new FsmStateNotFoundException();
 
             status = FsmStatus.Running;
+            InnerStart(state);
+        }
+
+        public void ChangeState(Type stateType)
+        {
+            if (status != FsmStatus.Running)
+                throw new FsmNotRunningException();
+
+            if (!_fsmStates.TryGetValue(stateType, out var state))
+                throw new FsmStateNotFoundException();
+            
+            if (state == activeState)
+                return;
+
+            InnerStop();
             InnerStart(state);
         }
 
@@ -98,19 +118,7 @@ namespace HoweFramework.Fsm.Implements
             if (status != FsmStatus.Running)
                 throw new FsmNotRunningException();
 
-            _activeState.Update(this, dt);
-        }
-
-        public void ChangeState<T>() where T : class, IFsmState
-        {
-            if (status != FsmStatus.Running)
-                throw new FsmNotRunningException();
-
-            if (!_fsmStates.TryGetValue(typeof(T), out var state))
-                throw new FsmStateNotFoundException();
-
-            InnerStop();
-            InnerStart(state);
+            activeState.Update(this, dt);
         }
 
         #region [Variable Container]
@@ -146,14 +154,14 @@ namespace HoweFramework.Fsm.Implements
 
         private void InnerStart(IFsmState state)
         {
-            _activeState = state;
-            _activeState.Enter(this);
+            activeState = state;
+            activeState.Enter(this);
         }
 
         private void InnerStop()
         {
-            _activeState.Leave(this);
-            _activeState = null;
+            activeState.Leave(this);
+            activeState = null;
         }
 
         #endregion
