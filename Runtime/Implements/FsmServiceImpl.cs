@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HoweFramework.Base;
 using HoweFramework.Fsm.Enums;
 using HoweFramework.Pool;
+using HoweFramework.Update;
 using HoweFramework.Utilities;
 
 namespace HoweFramework.Fsm.Implements
@@ -15,15 +16,38 @@ namespace HoweFramework.Fsm.Implements
         private readonly Dictionary<int, Fsm> _fsmDict = new Dictionary<int, Fsm>();
         private readonly IdentifierGenerator _generator = new IdentifierGenerator();
         private readonly List<Fsm> _updates = new List<Fsm>();
-        private readonly List<Fsm> _destroys = new List<Fsm>();
+        private readonly HashSet<Fsm> _destroys = new HashSet<Fsm>();
 
         public void Initialize()
         {
             _generator.Reset();
+            UpdateService.That.Register(this);
+        }
+
+        public void Dispose()
+        {
+            _generator.Dispose();
+
+            foreach (var fsm in _fsmDict.Values)
+                fsm.Dispose();
+
+            _fsmDict.Clear();
+            
+            UpdateService.That.Unregister(this);
         }
 
         public void Update(float dt)
         {
+            foreach (var destroy in _destroys)
+            {
+                _fsmDict.Remove(destroy.id);
+                _updates.Remove(destroy);
+                destroy.Dispose();
+                PoolService.Release(destroy);
+            }
+            
+            _destroys.Clear();
+
             for (var index = 0; index < _updates.Count; index++)
             {
                 var fsm = _updates[index];
@@ -35,16 +59,6 @@ namespace HoweFramework.Fsm.Implements
 
                 fsm.Update(dt);
             }
-        }
-
-        public void Dispose()
-        {
-            _generator.Dispose();
-
-            foreach (var fsm in _fsmDict.Values)
-                fsm.Dispose();
-
-            _fsmDict.Clear();
         }
 
         public IFsm Get(int id)
@@ -68,9 +82,7 @@ namespace HoweFramework.Fsm.Implements
             if (fsmOperator == null)
                 return;
 
-            fsmOperator.Dispose();
             _destroys.Add(fsmOperator);
-            _fsmDict.Remove(fsm.id);
         }
 
         public void Destroy(int id)
@@ -79,9 +91,7 @@ namespace HoweFramework.Fsm.Implements
             if (fsmOperator == null)
                 return;
 
-            fsmOperator.Dispose();
             _destroys.Add(fsmOperator);
-            _fsmDict.Remove(id);
         }
 
         public void Start(IFsm fsm, Type stateType)
